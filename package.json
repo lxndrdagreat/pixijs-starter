@@ -19,10 +19,10 @@
   "devDependencies": {
     "@types/stats.js": "^0.17.0",
     "pixi.js": "^7.2.4",
-    "prettier": "^2.8.7",
+    "prettier": "^3.0.0",
     "stats.js": "^0.17.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.2.0"
+    "typescript": "^5.1.6",
+    "vite": "^4.4.8"
   },
   "volta": {
     "node": "18.15.0",

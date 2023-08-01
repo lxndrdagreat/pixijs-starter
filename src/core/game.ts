@@ -9,6 +9,7 @@ import { InputManager } from './input-manager';
 import Stats from 'stats.js';
 import { AppRenderer } from './renderer';
 import { Scene, SceneManager } from './scene';
+import { ASPECT_RATIO_RESOLUTIONS } from './resolutions';
 
 interface GameOptions {
   frame: HTMLElement;
@@ -18,8 +19,7 @@ interface GameOptions {
 }
 
 const DEFAULT_RENDER_OPTIONS: Partial<IRendererOptionsAuto> = {
-  width: 1280,
-  height: 768,
+  ...ASPECT_RATIO_RESOLUTIONS.ASPECT_16_9.r1280x720,
 };
 
 export default class Game {

@@ -24,7 +24,7 @@ export class ExampleScene implements Scene {
 
     this.square.position.set(
       getRandomArbitrary(0, AppRenderer.shared.width - 64),
-      getRandomArbitrary(0, AppRenderer.shared.height - 64)
+      getRandomArbitrary(0, AppRenderer.shared.height - 64),
     );
 
     // random diagonal
@@ -34,7 +34,7 @@ export class ExampleScene implements Scene {
         [1, -1],
         [-1, 1],
         [-1, -1],
-      ])
+      ]),
     );
 
     this.stage.addChild(this.square);
@@ -78,7 +78,7 @@ export class ExampleScene implements Scene {
 
     this.square.position.set(
       this.square.position.x + this.velocity.x * this.speed * Time.deltaTime,
-      this.square.position.y + this.velocity.y * this.speed * Time.deltaTime
+      this.square.position.y + this.velocity.y * this.speed * Time.deltaTime,
     );
 
     if (this.square.position.x + this.square.width >= width) {

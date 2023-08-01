@@ -47,14 +47,14 @@ export class InputManager {
     bindElement.addEventListener('keydown', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_DOWN
+        KeyboardEventType.KEY_DOWN,
       );
     });
 
     bindElement.addEventListener('keyup', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_UP
+        KeyboardEventType.KEY_UP,
       );
     });
 
@@ -93,7 +93,7 @@ export class InputManager {
 
   private _handleKeyboardEvent(
     event: KeyboardEvent,
-    kind: KeyboardEventType
+    kind: KeyboardEventType,
   ): void {
     if (kind === KeyboardEventType.KEY_DOWN) {
       // If key is newly pressed...

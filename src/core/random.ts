@@ -17,7 +17,7 @@ export function getRandomInt(min: number, max: number): number {
 
 export function rollDie(sides: number, quantity: number = 1): number {
   return Array.from({ length: quantity }, () =>
-    getRandomInt(1, sides + 1)
+    getRandomInt(1, sides + 1),
   ).reduce((sum, value) => sum + value);
 }
 

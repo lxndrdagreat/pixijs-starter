@@ -1,4 +1,6 @@
 // Just trying to cover some common resolutions
+import { gcd } from './math';
+
 export const ASPECT_RATIO_RESOLUTIONS = {
   ASPECT_4_3: {
     r640x480: { width: 640, height: 480 },
@@ -29,3 +31,17 @@ export const ASPECT_RATIO_RESOLUTIONS = {
     r2560x1600: { width: 2560, height: 1600 },
   },
 };
+
+export function toAspectRatio(width: number, height: number): string {
+  const divisor = gcd(width, height);
+  return `${width / divisor}:${height / divisor}`;
+}
+
+export const aspectRatioIs4to3 = (width: number, height: number): boolean =>
+  toAspectRatio(width, height) === '4:3';
+export const aspectRatioIs5to3 = (width: number, height: number): boolean =>
+  toAspectRatio(width, height) === '5:3';
+export const aspectRatioIs16to9 = (width: number, height: number): boolean =>
+  toAspectRatio(width, height) === '16:9';
+export const aspectRatioIs16to10 = (width: number, height: number): boolean =>
+  toAspectRatio(width, height) === '16:10';

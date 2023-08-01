@@ -1,6 +1,6 @@
 import { Scene } from '../core/scene';
 import { Container, Graphics, Point, Sprite, Assets } from 'pixi.js';
-import { choice, getRandomArbitrary } from '../core/random';
+import { Random } from '../core/random';
 import { AppRenderer } from '../core/renderer';
 import { Time } from '../core/time';
 import { CommonKeys, InputManager } from '../core/input-manager';
@@ -23,13 +23,13 @@ export class ExampleScene implements Scene {
     this.buildSquare();
 
     this.square.position.set(
-      getRandomArbitrary(0, AppRenderer.shared.width - 64),
-      getRandomArbitrary(0, AppRenderer.shared.height - 64),
+      Random.shared.intRange(0, AppRenderer.shared.width - 64),
+      Random.shared.intRange(0, AppRenderer.shared.height - 64),
     );
 
     // random diagonal
     this.velocity.set(
-      ...choice([
+      ...Random.shared.choice([
         [1, 1],
         [1, -1],
         [-1, 1],
@@ -53,7 +53,7 @@ export class ExampleScene implements Scene {
     if (!this.square) {
       return;
     }
-    this.square.beginFill(choice(SQUARE_COLORS));
+    this.square.beginFill(Random.shared.choice(SQUARE_COLORS));
     this.square.drawRect(0, 0, 64, 64);
     this.square.endFill();
   }

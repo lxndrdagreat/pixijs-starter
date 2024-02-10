@@ -1,5 +1,5 @@
 import { Scene } from '../core/scene';
-import { Container, Graphics, Point, Sprite, Assets } from 'pixi.js';
+import { Assets, Container, Graphics, Point, Sprite } from 'pixi.js';
 import { Random } from '../core/random';
 import { AppRenderer } from '../core/renderer';
 import { Time } from '../core/time';
@@ -40,7 +40,10 @@ export class ExampleScene implements Scene {
     this.stage.addChild(this.square);
 
     // Load the logo as a texture so we can use it in a sprite
-    Assets.add('logo', '/vite.svg');
+    Assets.add({
+      alias: 'logo',
+      src: '/vite.svg',
+    });
     const texture = await Assets.load('logo');
     this.logo = new Sprite(texture);
     this.logo.anchor.set(0.5, 0.5);

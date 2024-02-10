@@ -17,15 +17,15 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@types/stats.js": "^0.17.0",
-    "pixi.js": "^7.2.4",
-    "prettier": "^3.0.0",
+    "@types/stats.js": "^0.17.3",
+    "pixi.js": "^7.4.0",
+    "prettier": "^3.2.5",
     "stats.js": "^0.17.0",
-    "typescript": "^5.1.6",
-    "vite": "^4.4.8"
+    "typescript": "^5.3.3",
+    "vite": "^5.1.1"
   },
   "volta": {
-    "node": "18.15.0",
+    "node": "20.11.0",
     "yarn": "1.22.19"
   }
 }

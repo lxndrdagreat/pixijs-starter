@@ -1,3 +1,5 @@
+import { AppRenderer } from './renderer';
+
 export enum KeyboardEventType {
   KEY_DOWN = 'KEY_DOWN',
   KEY_UP = 'KEY_UP',
@@ -29,7 +31,7 @@ const MOVEMENT_KEYS = {
   left: [CommonKeys.ArrowLeft, 'A'],
   right: [CommonKeys.ArrowRight, 'D'],
   up: [CommonKeys.ArrowUp, 'W'],
-  down: [CommonKeys.ArrowDown, 'S'],
+  down: [CommonKeys.ArrowDown, 'S']
 };
 
 export class InputManager {
@@ -47,14 +49,14 @@ export class InputManager {
     bindElement.addEventListener('keydown', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_DOWN,
+        KeyboardEventType.KEY_DOWN
       );
     });
 
     bindElement.addEventListener('keyup', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_UP,
+        KeyboardEventType.KEY_UP
       );
     });
 
@@ -93,7 +95,7 @@ export class InputManager {
 
   private _handleKeyboardEvent(
     event: KeyboardEvent,
-    kind: KeyboardEventType,
+    kind: KeyboardEventType
   ): void {
     if (kind === KeyboardEventType.KEY_DOWN) {
       // If key is newly pressed...
@@ -118,9 +120,16 @@ export class InputManager {
   private _handleMouseEvent(event: MouseEvent, kind: MouseEventType): void {
     if (kind === MouseEventType.MOUSE_MOVE) {
       const canvas = event.target as HTMLCanvasElement;
+      const rect = getObjectFitSize(
+        true,
+        canvas.scrollWidth,
+        canvas.scrollHeight,
+        AppRenderer.shared.width,
+        AppRenderer.shared.height
+      );
       this._mousePosition = {
-        x: Math.round(event.clientX - canvas.getBoundingClientRect().left),
-        y: Math.round(event.clientY - canvas.getBoundingClientRect().top),
+        x: Math.round((event.clientX - rect.left) / rect.ratio),
+        y: Math.round((event.clientY - rect.top) / rect.ratio)
       };
     } else if (kind === MouseEventType.MOUSE_DOWN) {
       // If button is newly pressed...
@@ -232,7 +241,62 @@ export class InputManager {
 
     return {
       x,
-      y,
+      y
     };
   }
+}
+
+//
+/* true = contain, false = cover */
+/**
+ * Used to determine the size of the canvas, due to how object-fit CSS property
+ * makes width/height inaccurate
+ * @see https://www.npmjs.com/package/intrinsic-scale
+ * @param contains
+ * @param containerWidth
+ * @param containerHeight
+ * @param width
+ * @param height
+ */
+function getObjectFitSize(
+  contains: boolean,
+  containerWidth: number,
+  containerHeight: number,
+  width: number,
+  height: number
+): {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  left: number;
+  top: number;
+  ratio: number;
+} {
+  var doRatio = width / height;
+  var cRatio = containerWidth / containerHeight;
+  var targetWidth = 0;
+  var targetHeight = 0;
+  var test = contains ? doRatio > cRatio : doRatio < cRatio;
+
+  if (test) {
+    targetWidth = containerWidth;
+    targetHeight = targetWidth / doRatio;
+  } else {
+    targetHeight = containerHeight;
+    targetWidth = targetHeight * doRatio;
+  }
+
+  const left = (containerWidth - targetWidth) / 2;
+  const top = (containerHeight - targetHeight) / 2;
+
+  return {
+    width: targetWidth,
+    height: targetHeight,
+    x: left,
+    y: top,
+    left,
+    top,
+    ratio: targetWidth / width
+  };
 }

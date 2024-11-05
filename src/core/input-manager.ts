@@ -31,7 +31,7 @@ const MOVEMENT_KEYS = {
   left: [CommonKeys.ArrowLeft, 'A'],
   right: [CommonKeys.ArrowRight, 'D'],
   up: [CommonKeys.ArrowUp, 'W'],
-  down: [CommonKeys.ArrowDown, 'S']
+  down: [CommonKeys.ArrowDown, 'S'],
 };
 
 export class InputManager {
@@ -49,14 +49,14 @@ export class InputManager {
     bindElement.addEventListener('keydown', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_DOWN
+        KeyboardEventType.KEY_DOWN,
       );
     });
 
     bindElement.addEventListener('keyup', (event: Event) => {
       this._handleKeyboardEvent(
         event as KeyboardEvent,
-        KeyboardEventType.KEY_UP
+        KeyboardEventType.KEY_UP,
       );
     });
 
@@ -95,7 +95,7 @@ export class InputManager {
 
   private _handleKeyboardEvent(
     event: KeyboardEvent,
-    kind: KeyboardEventType
+    kind: KeyboardEventType,
   ): void {
     if (kind === KeyboardEventType.KEY_DOWN) {
       // If key is newly pressed...
@@ -125,11 +125,11 @@ export class InputManager {
         canvas.scrollWidth,
         canvas.scrollHeight,
         AppRenderer.shared.width,
-        AppRenderer.shared.height
+        AppRenderer.shared.height,
       );
       this._mousePosition = {
         x: Math.round((event.clientX - rect.left) / rect.ratio),
-        y: Math.round((event.clientY - rect.top) / rect.ratio)
+        y: Math.round((event.clientY - rect.top) / rect.ratio),
       };
     } else if (kind === MouseEventType.MOUSE_DOWN) {
       // If button is newly pressed...
@@ -241,7 +241,7 @@ export class InputManager {
 
     return {
       x,
-      y
+      y,
     };
   }
 }
@@ -263,7 +263,7 @@ function getObjectFitSize(
   containerWidth: number,
   containerHeight: number,
   width: number,
-  height: number
+  height: number,
 ): {
   width: number;
   height: number;
@@ -297,6 +297,6 @@ function getObjectFitSize(
     y: top,
     left,
     top,
-    ratio: targetWidth / width
+    ratio: targetWidth / width,
   };
 }

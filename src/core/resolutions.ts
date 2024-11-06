@@ -1,5 +1,5 @@
 // Just trying to cover some common resolutions
-import { gcd } from './math';
+import { gcd } from '@/core/math';
 
 export const ASPECT_RATIO_RESOLUTIONS = {
   ASPECT_4_3: {

@@ -1,4 +1,4 @@
-import { AppRenderer } from './renderer';
+import { AppRenderer } from '@/core/renderer';
 
 export enum KeyboardEventType {
   KEY_DOWN = 'KEY_DOWN',

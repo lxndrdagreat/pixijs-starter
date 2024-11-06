@@ -1,24 +1,24 @@
 import {
   autoDetectRenderer,
   Container,
-  IRendererOptionsAuto,
   Renderer,
+  RendererOptions,
 } from 'pixi.js';
-import { Time } from './time';
-import { InputManager } from './input-manager';
+import { Time } from '@/core/time';
+import { InputManager } from '@/core/input-manager';
 import Stats from 'stats.js';
-import { AppRenderer } from './renderer';
-import { Scene, SceneManager } from './scene';
-import { ASPECT_RATIO_RESOLUTIONS } from './resolutions';
+import { AppRenderer } from '@/core/renderer';
+import { Scene, SceneManager } from '@/core/scene';
+import { ASPECT_RATIO_RESOLUTIONS } from '@/core/resolutions';
 
 interface GameOptions {
   frame: HTMLElement;
-  renderOptions?: Partial<IRendererOptionsAuto>;
+  renderOptions?: Partial<RendererOptions>;
   initialScene?: Scene;
   pauseWhenHidden?: boolean;
 }
 
-const DEFAULT_RENDER_OPTIONS: Partial<IRendererOptionsAuto> = {
+const DEFAULT_RENDER_OPTIONS: Partial<RendererOptions> = {
   ...ASPECT_RATIO_RESOLUTIONS.ASPECT_16_9.r1280x720,
 };
 
@@ -31,15 +31,13 @@ export default class Game {
   private activeScene: Scene | null = null;
   private pauseWhenHidden: boolean = true;
 
-  constructor(options: GameOptions) {
+  constructor(options: GameOptions, renderer: Renderer) {
     this.frame = options.frame;
-    if (options.hasOwnProperty('pauseWhenHidden')) {
+    if ('pauseWhenHidden' in options) {
       this.pauseWhenHidden = !!options.pauseWhenHidden;
     }
 
-    const { renderOptions = DEFAULT_RENDER_OPTIONS } = options;
-
-    this.renderer = autoDetectRenderer(renderOptions) as Renderer;
+    this.renderer = renderer;
     AppRenderer.shared = this.renderer;
 
     this.stage = new Container();
@@ -73,7 +71,14 @@ export default class Game {
     }
 
     requestAnimationFrame(this.tick.bind(this));
-    this.frame.appendChild(this.renderer.view as HTMLCanvasElement);
+    this.frame.appendChild(this.renderer.canvas);
+  }
+
+  static async create(options: GameOptions): Promise<Game> {
+    const { renderOptions = DEFAULT_RENDER_OPTIONS } = options;
+
+    const renderer = await autoDetectRenderer(renderOptions);
+    return new Game(options, renderer);
   }
 
   private update(): void {
@@ -101,8 +106,9 @@ export default class Game {
       }
     }
 
-    this.renderer.render(this.stage, {
+    this.renderer.render({
       clear: true,
+      container: this.stage,
     });
 
     // flush input

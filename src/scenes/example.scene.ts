@@ -1,9 +1,9 @@
-import { Scene } from '../core/scene';
+import { Scene } from '@/core/scene';
 import { Assets, Container, Graphics, Point, Sprite } from 'pixi.js';
-import { Random } from '../core/random';
-import { AppRenderer } from '../core/renderer';
-import { Time } from '../core/time';
-import { CommonKeys, InputManager } from '../core/input-manager';
+import { Random } from '@/core/random';
+import { AppRenderer } from '@/core/renderer';
+import { Time } from '@/core/time';
+import { CommonKeys, InputManager } from '@/core/input-manager';
 
 const SQUARE_COLORS = [
   0xffff00, 0xff0000, 0x00ff00, 0x0000ff, 0x00ffff, 0xff00ff,
@@ -56,9 +56,8 @@ export class ExampleScene implements Scene {
     if (!this.square) {
       return;
     }
-    this.square.beginFill(Random.shared.choice(SQUARE_COLORS));
-    this.square.drawRect(0, 0, 64, 64);
-    this.square.endFill();
+    this.square.rect(0, 0, 64, 64);
+    this.square.fill(Random.shared.choice(SQUARE_COLORS));
   }
 
   update(): void {

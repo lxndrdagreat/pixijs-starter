@@ -1,5 +1,5 @@
 import type { Container } from 'pixi.js';
-import { Subscribable } from './subscribable';
+import { Subscribable } from '@/core/subscribable';
 
 export interface Scene {
   stage: Container;

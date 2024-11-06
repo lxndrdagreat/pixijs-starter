@@ -1,6 +1,6 @@
 import './style.css';
-import Game from './core/game';
-import { ExampleScene } from './scenes/example.scene';
+import Game from '@/core/game';
+import { ExampleScene } from '@/scenes/example.scene';
 
 document.addEventListener('DOMContentLoaded', () => {
   const frame = document.getElementById('frame');
@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     throw new Error('Could not find #frame element.');
   }
 
-  new Game({
+  Game.create({
     frame,
     initialScene: new ExampleScene(),
-  });
+  }).catch(console.error);
 });

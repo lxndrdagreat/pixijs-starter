@@ -1,9 +1,4 @@
-import {
-  autoDetectRenderer,
-  Container,
-  Renderer,
-  RendererOptions,
-} from 'pixi.js';
+import { AutoDetectOptions, autoDetectRenderer, Container, Renderer } from 'pixi.js';
 import { Time } from '@/core/time';
 import { InputManager } from '@/core/input-manager';
 import Stats from 'stats.js';
@@ -13,13 +8,14 @@ import { ASPECT_RATIO_RESOLUTIONS } from '@/core/resolutions';
 
 interface GameOptions {
   frame: HTMLElement;
-  renderOptions?: Partial<RendererOptions>;
+  renderOptions?: Partial<AutoDetectOptions>;
   initialScene?: Scene;
   pauseWhenHidden?: boolean;
 }
 
-const DEFAULT_RENDER_OPTIONS: Partial<RendererOptions> = {
+const DEFAULT_RENDER_OPTIONS: Partial<AutoDetectOptions> = {
   ...ASPECT_RATIO_RESOLUTIONS.ASPECT_16_9.r1280x720,
+  preference: 'webgpu'
 };
 
 export default class Game {
@@ -108,7 +104,7 @@ export default class Game {
 
     this.renderer.render({
       clear: true,
-      container: this.stage,
+      container: this.stage
     });
 
     // flush input

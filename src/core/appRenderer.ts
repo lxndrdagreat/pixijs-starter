@@ -1,6 +1,34 @@
-// Just trying to cover some common resolutions
 import { gcd } from "@/core/math";
+import type { Renderer } from "pixi.js";
 
+let shared: Renderer;
+
+export default {
+	/**
+	 * Gets the shared app renderer for the application.
+	 *
+	 * @example
+	 * import AppRenderer from "@/core/appRenderer";
+	 *
+	 * // ...snip...
+	 *
+	 * const {width, height} = AppRenderer.shared;
+	 */
+	get shared(): Renderer {
+		if (!shared) {
+			throw new Error("Renderer is not initialized.");
+		}
+		return shared;
+	},
+
+	set shared(value: Renderer) {
+		shared = value;
+	},
+};
+
+/**
+ * Defines common aspect ratio resolutions.
+ */
 export const ASPECT_RATIO_RESOLUTIONS = {
 	ASPECT_4_3: {
 		r640x480: { width: 640, height: 480 },
@@ -32,16 +60,34 @@ export const ASPECT_RATIO_RESOLUTIONS = {
 	},
 };
 
+/**
+ * Returns the aspect ratio (as a string) for the given width and height.
+ */
 export function toAspectRatio(width: number, height: number): string {
 	const divisor = gcd(width, height);
 	return `${width / divisor}:${height / divisor}`;
 }
 
+/**
+ * Returns whether the given width and height have a 4:3 aspect ratio
+ */
 export const aspectRatioIs4to3 = (width: number, height: number): boolean =>
 	toAspectRatio(width, height) === "4:3";
+
+/**
+ * Returns whether the given width and height have a 5:3 aspect ratio
+ */
 export const aspectRatioIs5to3 = (width: number, height: number): boolean =>
 	toAspectRatio(width, height) === "5:3";
+
+/**
+ * Returns whether the given width and height have a 16:9 aspect ratio
+ */
 export const aspectRatioIs16to9 = (width: number, height: number): boolean =>
 	toAspectRatio(width, height) === "16:9";
+
+/**
+ * Returns whether the given width and height have a 16:10 aspect ratio
+ */
 export const aspectRatioIs16to10 = (width: number, height: number): boolean =>
 	toAspectRatio(width, height) === "16:10";

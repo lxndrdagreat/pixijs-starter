@@ -1,6 +1,5 @@
-import { InputManager } from "@/core/input-manager";
-import AppRenderer from "@/core/renderer";
-import { ASPECT_RATIO_RESOLUTIONS } from "@/core/resolutions";
+import AppRenderer, { ASPECT_RATIO_RESOLUTIONS } from "@/core/appRenderer";
+import { InputManager } from "@/core/inputManager";
 import { type Scene, SceneManager } from "@/core/scene";
 import Time from "@/core/time";
 import {
@@ -104,6 +103,8 @@ export default class Game {
 			while (delta >= Time.frameRate) {
 				this.update();
 				delta -= Time.frameRate;
+				// flush input
+				InputManager.instance.flush();
 			}
 		}
 
@@ -111,9 +112,6 @@ export default class Game {
 			clear: true,
 			container: this.stage,
 		});
-
-		// flush input
-		InputManager.instance.flush();
 
 		if (this._stats) {
 			this._stats.end();

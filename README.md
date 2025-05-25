@@ -7,7 +7,7 @@ _Because I kept doing this over and over._
 - WebGL via [Pixi.js](https://pixijs.com/)
 - Game structure
   - Delta time handling with fixed tick rate
-  - [Input management](./src/core/input-manager.ts)
+  - [Input management](src/core/inputManager.ts)
   - [Scene management](./src/core/scene.ts)
   - [Example scene](./src/scenes/example.scene.ts) showing how to write scenes, handling update tick, input, etc.
 - [Subscription system](./src/core/subscribable.ts)
@@ -52,7 +52,7 @@ Every frame, the game will do the following:
 - Update the global [delta time](./src/core/time.ts), which can be used to calculate time-based values.
 - Call the `update()` function for the currently-active [Scene](./src/core/scene.ts).
 - Render.
-- Flush the [InputManager](./src/core/input-manager.ts) (clearing the input state for the next frame).
+- Flush the [InputManager](src/core/inputManager.ts) (clearing the input state for the next frame).
 
 ## Scenes
 

@@ -11,7 +11,7 @@ _Because I kept doing this over and over._
   - [Scene management](./src/core/scene.ts)
   - [Example scene](./src/scenes/example.scene.ts) showing how to write scenes, handling update tick, input, etc.
 - [Subscription system](./src/core/subscribable.ts)
-- [Random utils](./src/core/random.ts)
+- [Random utils](src/core/pseudoRandom.ts)
   - Seedable random number generator
   - Random range values (integers and floats)
   - Random choice from an Array

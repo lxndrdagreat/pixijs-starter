@@ -1,9 +1,9 @@
-import type { UserConfig } from 'vite';
+import type { UserConfig } from "vite";
 
 export default {
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
+	resolve: {
+		alias: {
+			"@": "/src",
+		},
+	},
 } satisfies UserConfig;

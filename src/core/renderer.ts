@@ -1,5 +1,5 @@
-import { Renderer } from 'pixi.js';
+import type { Renderer } from "pixi.js";
 
 export class AppRenderer {
-  static shared: Renderer;
+	static shared: Renderer;
 }

@@ -4,23 +4,24 @@ _Because I kept doing this over and over._
 
 ## Features
 
-- WebGL via [Pixi.js](https://pixijs.com/)
+- WebGL/WebGPU via [Pixi.js](https://pixijs.com/)
 - Game structure
-  - Delta time handling with fixed tick rate
+  - Delta time handling with a fixed tick rate
   - [Input management](src/core/inputManager.ts)
   - [Scene management](./src/core/scene.ts)
   - [Example scene](./src/scenes/example.scene.ts) showing how to write scenes, handling update tick, input, etc.
 - [Subscription system](./src/core/subscribable.ts)
-- [Random utils](src/core/pseudoRandom.ts)
+- [PseudoRandom class](src/core/pseudoRandom.ts)
   - Seedable random number generator
   - Random range values (integers and floats)
   - Random choice from an Array
+  - Random weighted choice from an Array
 - [Math helpers](./src/core/math.ts) including:
   - point-in-rectangle check
   - Conversion between Array index and 2D coordinates
 - Solid dev environment
   - [Vite](https://vitejs.dev/) dev environment
-  - [Prettier](https://prettier.io/) style formatting
+  - [Biome.js](https://biomejs.dev/) style formatting
   - TypeScript
   - [Stats.js](https://mrdoob.github.io/stats.js/) when running in dev mode
   - Simple, sane defaults for project structure
@@ -31,9 +32,8 @@ _Because I kept doing this over and over._
 - Update project info
   - [`package.json`](./package.json) name/description/version fields
   - [`index.html`](./index.html) details
-- _Optional:_ use [Volta](https://volta.sh/) to ensure you're using the pinned versions of Node/yarn
-- Install dependencies: `yarn`
-- Run `yarn dev` to start the Vite dev server
+- Install dependencies via `npm`, `pnpm`, `yarn`, etc.
+- Run the Vite dev server via the `run` script
 
 ## Game Options
 
@@ -50,7 +50,7 @@ fixed number of ticks per second.
 Every frame, the game will do the following:
 
 - Update the global [delta time](./src/core/time.ts), which can be used to calculate time-based values.
-- Call the `update()` function for the currently-active [Scene](./src/core/scene.ts).
+- Call the `update()` function for the active [Scene](./src/core/scene.ts).
 - Render.
 - Flush the [InputManager](src/core/inputManager.ts) (clearing the input state for the next frame).
 
@@ -74,7 +74,7 @@ and is rendered in the game loop.
 async load(): Promise<void> { ... }
 ```
 
-Putting any needed loading of resources in the `load()` function ensures that the game will not start until the scene is
+Putting all loading of resources in the `load()` function ensures that the game will not start until the scene is
 ready.
 
 ### Update

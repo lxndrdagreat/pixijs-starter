@@ -1,8 +1,8 @@
 import { InputManager } from "@/core/input-manager";
-import { AppRenderer } from "@/core/renderer";
+import AppRenderer from "@/core/renderer";
 import { ASPECT_RATIO_RESOLUTIONS } from "@/core/resolutions";
 import { type Scene, SceneManager } from "@/core/scene";
-import { Time } from "@/core/time";
+import Time from "@/core/time";
 import {
 	type AutoDetectOptions,
 	Container,
@@ -67,7 +67,7 @@ export default class Game {
 			document.body.appendChild(this._stats.dom);
 		}
 
-		if (!!options.initialScene) {
+		if (options.initialScene) {
 			SceneManager.instance.push(options.initialScene);
 		}
 

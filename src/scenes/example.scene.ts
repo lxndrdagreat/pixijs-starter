@@ -1,8 +1,8 @@
 import { CommonKeys, InputManager } from "@/core/input-manager";
 import { PseudoRandom } from "@/core/pseudoRandom";
-import { AppRenderer } from "@/core/renderer";
+import AppRenderer from "@/core/renderer";
 import type { Scene } from "@/core/scene";
-import { Time } from "@/core/time";
+import Time from "@/core/time";
 import { Assets, Container, Graphics, Point, Sprite } from "pixi.js";
 
 const SQUARE_COLORS = [

@@ -56,7 +56,6 @@ function _sfc32(
 }
 
 function generateRandomString(): string {
-	// return String.fromCharCodes(List.generate(8, (index) => r.nextInt(33) + 89));
 	return Array.from(
 		{ length: 8 },
 		() => Math.floor(Math.random() * 33) + 89,

@@ -9,7 +9,7 @@ export function distance(
 	{ x, y }: PointLike,
 	{ x: x2, y: y2 }: PointLike,
 ): number {
-	return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
+	return Math.sqrt((x2 - x) ** 2 + (y2 - y) ** 2);
 }
 
 export function indexToCoord(index: number, width: number): PointTuple {
@@ -74,8 +74,10 @@ export function coordinateKey(coord: PointLike | PointTuple): number {
  * @returns {number}
  */
 export function gcd(a: number, b: number): number {
+	let aa = a;
+	let bb = b;
 	while (b) {
-		[a, b] = [b, a % b];
+		[aa, bb] = [bb, aa % bb];
 	}
-	return a;
+	return aa;
 }

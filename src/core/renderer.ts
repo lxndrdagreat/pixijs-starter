@@ -1,5 +1,16 @@
 import type { Renderer } from "pixi.js";
 
-export class AppRenderer {
-	static shared: Renderer;
-}
+let shared: Renderer;
+
+export default {
+	get shared(): Renderer {
+		if (!shared) {
+			throw new Error("Renderer is not initialized.");
+		}
+		return shared;
+	},
+
+	set shared(value: Renderer) {
+		shared = value;
+	},
+};

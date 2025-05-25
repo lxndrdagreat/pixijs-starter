@@ -8,8 +8,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"preview": "vite preview",
-		"check": "biome check --write"
+		"check": "biome check --write",
+		"preview": "vite preview"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

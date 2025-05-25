@@ -1,4 +1,4 @@
-import { AppRenderer } from "@/core/renderer";
+import AppRenderer from "@/core/renderer";
 
 export enum KeyboardEventType {
 	KEY_DOWN = "KEY_DOWN",
@@ -273,11 +273,11 @@ function getObjectFitSize(
 	top: number;
 	ratio: number;
 } {
-	var doRatio = width / height;
-	var cRatio = containerWidth / containerHeight;
-	var targetWidth = 0;
-	var targetHeight = 0;
-	var test = contains ? doRatio > cRatio : doRatio < cRatio;
+	const doRatio = width / height;
+	const cRatio = containerWidth / containerHeight;
+	let targetWidth: number;
+	let targetHeight: number;
+	const test = contains ? doRatio > cRatio : doRatio < cRatio;
 
 	if (test) {
 		targetWidth = containerWidth;

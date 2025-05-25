@@ -15,46 +15,73 @@ export enum MouseButtons {
 	Left = 0,
 }
 
+/**
+ * Common keys used by games
+ */
 export enum CommonKeys {
 	ArrowLeft = "arrowleft",
-	ArrowRight = "arrowRight",
+	ArrowRight = "arrowright",
 	ArrowUp = "arrowup",
 	ArrowDown = "arrowdown",
 	Enter = "Enter",
 	Space = " ",
+	Escape = "Escape",
+	Tab = "Tab",
 }
 
 export const AlphaNumericCharacters: Readonly<string[]> =
 	"abcdefghijklmnopqrstuvwxyz1234567890".split("");
 
-const MOVEMENT_KEYS = {
-	left: [CommonKeys.ArrowLeft, "A"],
-	right: [CommonKeys.ArrowRight, "D"],
-	up: [CommonKeys.ArrowUp, "W"],
-	down: [CommonKeys.ArrowDown, "S"],
-};
+interface MappedInputs {
+	movement: {
+		left: string[];
+		right: string[];
+		up: string[];
+		down: string[];
+	};
+}
+
+export interface InputManagerConfiguration {
+	bindElement?: HTMLElement | Window;
+	mappedInputs?: MappedInputs;
+}
 
 export class InputManager {
 	private static _instance: InputManager;
-	private pressedKeys = new Map<string, boolean>();
-	private newPressedKeys: string[] = [];
-	private newReleasedKeys: string[] = [];
-	private _mousePosition: { x: number; y: number } = { x: 0, y: 0 };
-	private pressedMouseButtons = new Map<number, boolean>();
-	private newPressedMouseButtons: number[] = [];
-	private newReleasedMouseButtons: number[] = [];
+	#pressedKeys = new Map<string, boolean>();
+	#pressedKeysThisFrame: string[] = [];
+	#releasedKeysThisFrame: string[] = [];
+	#mousePosition: { x: number; y: number } = { x: 0, y: 0 };
+	#pressedMouseButtons = new Map<number, boolean>();
+	#pressedMouseButtonsThisFrame: number[] = [];
+	#releasedMouseButtonsThisFrame: number[] = [];
+	#mappedInputs: MappedInputs;
 
-	constructor(bindElement: HTMLElement | Window = window) {
+	constructor(config?: InputManagerConfiguration) {
+		const {
+			bindElement = window,
+			mappedInputs = {
+				movement: {
+					left: [CommonKeys.ArrowLeft, "A"],
+					right: [CommonKeys.ArrowRight, "D"],
+					up: [CommonKeys.ArrowUp, "W"],
+					down: [CommonKeys.ArrowDown, "S"],
+				},
+			},
+		} = config || {};
+
+		this.#mappedInputs = mappedInputs;
+
 		// Set up input bindings
 		bindElement.addEventListener("keydown", (event: Event) => {
-			this._handleKeyboardEvent(
+			this.#handleKeyboardEvent(
 				event as KeyboardEvent,
 				KeyboardEventType.KEY_DOWN,
 			);
 		});
 
 		bindElement.addEventListener("keyup", (event: Event) => {
-			this._handleKeyboardEvent(
+			this.#handleKeyboardEvent(
 				event as KeyboardEvent,
 				KeyboardEventType.KEY_UP,
 			);
@@ -64,18 +91,18 @@ export class InputManager {
 			if ((event.target as HTMLElement).nodeName !== "CANVAS") {
 				return;
 			}
-			this._handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_MOVE);
+			this.#handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_MOVE);
 		});
 
 		bindElement.addEventListener("mousedown", (event: Event) => {
 			if ((event.target as HTMLElement).nodeName !== "CANVAS") {
 				return;
 			}
-			this._handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_DOWN);
+			this.#handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_DOWN);
 		});
 
 		bindElement.addEventListener("mouseup", (event: Event) => {
-			this._handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_UP);
+			this.#handleMouseEvent(event as MouseEvent, MouseEventType.MOUSE_UP);
 		});
 	}
 
@@ -87,37 +114,34 @@ export class InputManager {
 	}
 
 	flush(): void {
-		this.newPressedKeys = [];
-		this.newReleasedKeys = [];
-		this.newPressedMouseButtons = [];
-		this.newReleasedMouseButtons = [];
+		this.#pressedKeysThisFrame = [];
+		this.#releasedKeysThisFrame = [];
+		this.#pressedMouseButtonsThisFrame = [];
+		this.#releasedMouseButtonsThisFrame = [];
 	}
 
-	private _handleKeyboardEvent(
-		event: KeyboardEvent,
-		kind: KeyboardEventType,
-	): void {
+	#handleKeyboardEvent(event: KeyboardEvent, kind: KeyboardEventType): void {
 		if (kind === KeyboardEventType.KEY_DOWN) {
 			// If key is newly pressed...
 			if (
 				this.keyUp(event.key.toUpperCase()) &&
-				this.newPressedKeys.indexOf(event.key.toUpperCase()) < 0
+				this.#pressedKeysThisFrame.indexOf(event.key.toUpperCase()) < 0
 			) {
-				this.newPressedKeys.push(event.key.toUpperCase());
+				this.#pressedKeysThisFrame.push(event.key.toUpperCase());
 			}
-			this.pressedKeys.set(event.key.toUpperCase(), true);
+			this.#pressedKeys.set(event.key.toUpperCase(), true);
 		} else {
 			if (
 				this.keyDown(event.key.toUpperCase()) &&
-				this.newReleasedKeys.indexOf(event.key.toUpperCase()) < 0
+				this.#releasedKeysThisFrame.indexOf(event.key.toUpperCase()) < 0
 			) {
-				this.newReleasedKeys.push(event.key.toUpperCase());
+				this.#releasedKeysThisFrame.push(event.key.toUpperCase());
 			}
-			this.pressedKeys.set(event.key.toUpperCase(), false);
+			this.#pressedKeys.set(event.key.toUpperCase(), false);
 		}
 	}
 
-	private _handleMouseEvent(event: MouseEvent, kind: MouseEventType): void {
+	#handleMouseEvent(event: MouseEvent, kind: MouseEventType): void {
 		if (kind === MouseEventType.MOUSE_MOVE) {
 			const canvas = event.target as HTMLCanvasElement;
 			const rect = getObjectFitSize(
@@ -127,7 +151,7 @@ export class InputManager {
 				AppRenderer.shared.width,
 				AppRenderer.shared.height,
 			);
-			this._mousePosition = {
+			this.#mousePosition = {
 				x: Math.round((event.clientX - rect.left) / rect.ratio),
 				y: Math.round((event.clientY - rect.top) / rect.ratio),
 			};
@@ -135,47 +159,47 @@ export class InputManager {
 			// If button is newly pressed...
 			if (
 				this.mouseUp(event.button) &&
-				this.newPressedMouseButtons.indexOf(event.button) < 0
+				this.#pressedMouseButtonsThisFrame.indexOf(event.button) < 0
 			) {
-				this.newPressedMouseButtons.push(event.button);
+				this.#pressedMouseButtonsThisFrame.push(event.button);
 			}
-			this.pressedMouseButtons.set(event.button, true);
+			this.#pressedMouseButtons.set(event.button, true);
 		} else if (kind === MouseEventType.MOUSE_UP) {
 			if (
 				this.mouseDown(event.button) &&
-				this.newReleasedMouseButtons.indexOf(event.button) < 0
+				this.#releasedMouseButtonsThisFrame.indexOf(event.button) < 0
 			) {
-				this.newReleasedMouseButtons.push(event.button);
+				this.#releasedMouseButtonsThisFrame.push(event.button);
 			}
-			this.pressedMouseButtons.set(event.button, false);
+			this.#pressedMouseButtons.set(event.button, false);
 		}
 	}
 
-	/*
+	/**
 	 * Returns true if the given key was newly pressed (since the last frame)
 	 */
 	keyPressed(key: string): boolean {
-		return this.newPressedKeys.indexOf(key.toUpperCase()) >= 0;
+		return this.#pressedKeysThisFrame.indexOf(key.toUpperCase()) >= 0;
 	}
 
-	/*
+	/**
 	 * Returns true if the given key was newly released (since the last frame)
 	 */
 	keyReleased(key: string): boolean {
-		return this.newReleasedKeys.indexOf(key.toUpperCase()) >= 0;
+		return this.#releasedKeysThisFrame.indexOf(key.toUpperCase()) >= 0;
 	}
 
-	/*
+	/**
 	 * Is the given key currently down (pressed)
 	 */
 	keyDown(key: string): boolean {
 		return (
-			this.pressedKeys.has(key.toUpperCase()) &&
-			this.pressedKeys.get(key.toUpperCase()) === true
+			this.#pressedKeys.has(key.toUpperCase()) &&
+			this.#pressedKeys.get(key.toUpperCase()) === true
 		);
 	}
 
-	/*
+	/**
 	 * Is the given key currently up (not pressed)
 	 */
 	keyUp(key: string): boolean {
@@ -183,7 +207,7 @@ export class InputManager {
 	}
 
 	getNewKeys(): string[] {
-		return this.newPressedKeys;
+		return this.#pressedKeysThisFrame;
 	}
 
 	/**
@@ -192,8 +216,8 @@ export class InputManager {
 	 */
 	mouseDown(button: number): boolean {
 		return (
-			this.pressedMouseButtons.has(button) &&
-			this.pressedMouseButtons.get(button) === true
+			this.#pressedMouseButtons.has(button) &&
+			this.#pressedMouseButtons.get(button) === true
 		);
 	}
 
@@ -210,32 +234,44 @@ export class InputManager {
 	 * @param button
 	 */
 	mousePressed(button: number): boolean {
-		return this.newPressedMouseButtons.includes(button);
+		return this.#pressedMouseButtonsThisFrame.includes(button);
 	}
 
 	/**
 	 * Returns true of the mouse button was newly released
-	 * @param button
+	 * @param button The index of the Mouse Button to check
 	 */
 	mouseReleased(button: number): boolean {
-		return this.newReleasedMouseButtons.includes(button);
+		return this.#releasedMouseButtonsThisFrame.includes(button);
 	}
 
+	/**
+	 * Returns the position of the mouse cursor
+	 */
 	get mousePosition(): Readonly<{ x: number; y: number }> {
-		return this._mousePosition;
+		return this.#mousePosition;
 	}
 
 	get movement(): Readonly<{ x: number; y: number }> {
 		let x = 0;
 		let y = 0;
-		if (MOVEMENT_KEYS.left.filter((key) => this.keyDown(key)).length) {
+		if (
+			this.#mappedInputs.movement.left.filter((key) => this.keyDown(key)).length
+		) {
 			x = -1;
-		} else if (MOVEMENT_KEYS.right.filter((key) => this.keyDown(key)).length) {
+		} else if (
+			this.#mappedInputs.movement.right.filter((key) => this.keyDown(key))
+				.length
+		) {
 			x = 1;
 		}
-		if (MOVEMENT_KEYS.up.filter((key) => this.keyDown(key)).length) {
+		if (
+			this.#mappedInputs.movement.up.filter((key) => this.keyDown(key)).length
+		) {
 			y = -1;
-		} else if (MOVEMENT_KEYS.down.filter((key) => this.keyDown(key)).length) {
+		} else if (
+			this.#mappedInputs.movement.down.filter((key) => this.keyDown(key)).length
+		) {
 			y = 1;
 		}
 
@@ -246,7 +282,6 @@ export class InputManager {
 	}
 }
 
-//
 /* true = contain, false = cover */
 /**
  * Used to determine the size of the canvas, due to how object-fit CSS property

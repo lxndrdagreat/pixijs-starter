@@ -1,7 +1,7 @@
 import AppRenderer from "@/core/appRenderer";
 import { CommonKeys, InputManager } from "@/core/inputManager";
 import { PseudoRandom } from "@/core/pseudoRandom";
-import type { Scene } from "@/core/scene";
+import type { Scene, SceneLoader } from '@/core/scene';
 import Time from "@/core/time";
 import { Assets, Container, Graphics, Point, Sprite } from "pixi.js";
 
@@ -9,15 +9,28 @@ const SQUARE_COLORS = [
 	0xffff00, 0xff0000, 0x00ff00, 0x0000ff, 0x00ffff, 0xff00ff,
 ];
 
-export class ExampleScene implements Scene {
+export class ExampleSceneLoader implements SceneLoader<ExampleScene> {
+	async load(): Promise<ExampleScene> {
+		// Load the logo as a texture so we can use it in a sprite
+		Assets.add({
+			alias: "logo",
+			src: "/vite.svg",
+		});
+		await Assets.load("logo");
+
+		return new ExampleScene();
+	}
+}
+
+class ExampleScene implements Scene {
 	stage: Container = new Container();
 
-	private square?: Graphics;
-	private logo?: Sprite;
+	private square: Graphics;
+	private logo: Sprite;
 	private speed = 256;
 	private velocity: Point = new Point(0, 0);
 
-	async load(): Promise<Scene> {
+	constructor() {
 		this.square = new Graphics();
 
 		this.buildSquare();
@@ -39,17 +52,10 @@ export class ExampleScene implements Scene {
 
 		this.stage.addChild(this.square);
 
-		// Load the logo as a texture so we can use it in a sprite
-		Assets.add({
-			alias: "logo",
-			src: "/vite.svg",
-		});
-		const texture = await Assets.load("logo");
+		const texture = Assets.get("logo");
 		this.logo = new Sprite(texture);
 		this.logo.anchor.set(0.5, 0.5);
 		this.stage.addChild(this.logo);
-
-		return Promise.resolve(this);
 	}
 
 	private buildSquare(): void {

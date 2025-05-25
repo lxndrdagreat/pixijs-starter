@@ -3,15 +3,18 @@ import type { Container } from "pixi.js";
 
 export interface Scene {
 	stage: Container;
-	load: () => Promise<Scene>;
 	update: () => void;
+}
+
+export interface SceneLoader<SceneToLoad extends Scene = Scene> {
+	load: () => Promise<SceneToLoad>;
 }
 
 export class SceneManager {
 	private static _instance: SceneManager;
 	private _sceneStack: Scene[] = [];
 
-	onSceneLoad: Subscribable<Scene> = new Subscribable<Scene>();
+	onSceneLoading: Subscribable<Promise<Scene>> = new Subscribable<Promise<Scene>>();
 	onSceneLoaded: Subscribable<Scene> = new Subscribable<Scene>();
 	onActiveSceneChanged: Subscribable<Scene | null> =
 		new Subscribable<Scene | null>();
@@ -30,14 +33,15 @@ export class SceneManager {
 		return this._sceneStack[0];
 	}
 
-	async replace(scene: Scene): Promise<Scene> {
+	async replace<SceneToLoad extends Scene>(sceneLoader: SceneLoader<SceneToLoad>): Promise<Scene> {
 		this._sceneStack = [];
-		return this.push(scene);
+		return this.push(sceneLoader);
 	}
 
-	async push(scene: Scene): Promise<Scene> {
-		this.onSceneLoad.publish(scene);
-		await scene.load();
+	async push<SceneToLoad extends Scene>(sceneLoader: SceneLoader<SceneToLoad>): Promise<SceneToLoad> {
+		const loadPromise = sceneLoader.load();
+		this.onSceneLoading.publish(loadPromise);
+		const scene = await loadPromise;
 		this.onSceneLoaded.publish(scene);
 		this.onActiveSceneChanged.publish(scene);
 		this._sceneStack.unshift(scene);

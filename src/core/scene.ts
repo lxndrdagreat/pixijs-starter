@@ -1,20 +1,32 @@
 import { Subscribable } from "@/core/subscribable";
-import type { Container } from "pixi.js";
+import { Container } from "pixi.js";
 
-export interface Scene {
-	stage: Container;
-	update: () => void;
-}
+export class Scene {
+	stage: Container = new Container();
 
-export interface SceneLoader<SceneToLoad extends Scene = Scene> {
-	load: () => Promise<SceneToLoad>;
+	/**
+	 * Override this function. This is where your scene's update
+	 * logic is run every frame.
+	 */
+	update(): void {}
+
+	/**
+	 * Override this function. This is where you load and assets
+	 * needed by the scene, then return a new instance of the scene
+	 * class itself.
+	 */
+	static async load(): Promise<Scene> {
+		return new Scene();
+	}
 }
 
 export class SceneManager {
 	private static _instance: SceneManager;
 	private _sceneStack: Scene[] = [];
 
-	onSceneLoading: Subscribable<Promise<Scene>> = new Subscribable<Promise<Scene>>();
+	onSceneLoading: Subscribable<Promise<Scene>> = new Subscribable<
+		Promise<Scene>
+	>();
 	onSceneLoaded: Subscribable<Scene> = new Subscribable<Scene>();
 	onActiveSceneChanged: Subscribable<Scene | null> =
 		new Subscribable<Scene | null>();
@@ -33,13 +45,13 @@ export class SceneManager {
 		return this._sceneStack[0];
 	}
 
-	async replace<SceneToLoad extends Scene>(sceneLoader: SceneLoader<SceneToLoad>): Promise<Scene> {
+	async replace(sceneClass: typeof Scene): Promise<Scene> {
 		this._sceneStack = [];
-		return this.push(sceneLoader);
+		return this.push(sceneClass);
 	}
 
-	async push<SceneToLoad extends Scene>(sceneLoader: SceneLoader<SceneToLoad>): Promise<SceneToLoad> {
-		const loadPromise = sceneLoader.load();
+	async push(sceneClass: typeof Scene): Promise<Scene> {
+		const loadPromise = sceneClass.load();
 		this.onSceneLoading.publish(loadPromise);
 		const scene = await loadPromise;
 		this.onSceneLoaded.publish(scene);

@@ -11,6 +11,7 @@ const SQUARE_COLORS = [
 
 export class ExampleScene extends Scene {
 	#square: Graphics;
+	#squareColorIndex = 0;
 	#logo: Sprite;
 	#speed = 256;
 	#velocity: Point = new Point(0, 0);
@@ -19,6 +20,10 @@ export class ExampleScene extends Scene {
 		super();
 		this.#square = new Graphics();
 
+		this.#squareColorIndex = PseudoRandom.shared.intRange(
+			0,
+			SQUARE_COLORS.length,
+		);
 		this.#buildSquare();
 
 		this.#square.position.set(
@@ -55,26 +60,20 @@ export class ExampleScene extends Scene {
 	}
 
 	#buildSquare(): void {
-		if (!this.#square) {
-			return;
-		}
+		++this.#squareColorIndex;
 		this.#square.rect(0, 0, 64, 64);
-		this.#square.fill(PseudoRandom.shared.choice(SQUARE_COLORS));
+		this.#square.fill(
+			SQUARE_COLORS[this.#squareColorIndex % SQUARE_COLORS.length],
+		);
 	}
 
 	override update(): void {
 		const { width, height } = AppRenderer.shared;
 
-		if (this.#logo) {
-			// center the logo
-			this.#logo.position.set(width / 2, height / 2);
-			// rotate the logo
-			this.#logo.rotation += Math.PI * Time.deltaTime;
-		}
-
-		if (!this.#square) {
-			return;
-		}
+		// center the logo
+		this.#logo.position.set(width / 2, height / 2);
+		// rotate the logo
+		this.#logo.rotation += Math.PI * Time.deltaTime;
 
 		if (InputManager.instance.keyPressed(CommonKeys.Space)) {
 			this.#buildSquare();
@@ -85,15 +84,24 @@ export class ExampleScene extends Scene {
 			this.#square.position.y + this.#velocity.y * this.#speed * Time.deltaTime,
 		);
 
+		let bounced = false;
 		if (this.#square.position.x + this.#square.width >= width) {
 			this.#velocity.set(-this.#velocity.x, this.#velocity.y);
+			bounced = true;
 		} else if (this.#square.position.x <= 0) {
 			this.#velocity.set(-this.#velocity.x, this.#velocity.y);
+			bounced = true;
 		}
 		if (this.#square.position.y + this.#square.height >= height) {
 			this.#velocity.set(this.#velocity.x, -this.#velocity.y);
+			bounced = true;
 		} else if (this.#square.position.y <= 0) {
 			this.#velocity.set(this.#velocity.x, -this.#velocity.y);
+			bounced = true;
+		}
+
+		if (bounced) {
+			this.#buildSquare();
 		}
 	}
 }

@@ -1,5 +1,5 @@
-import { gcd } from "@/core/math";
 import type { Renderer } from "pixi.js";
+import { gcd } from "@/core/math";
 
 let shared: Renderer;
 

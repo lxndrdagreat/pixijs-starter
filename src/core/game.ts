@@ -1,14 +1,14 @@
+import {
+	type AutoDetectOptions,
+	autoDetectRenderer,
+	Container,
+	type Renderer,
+} from "pixi.js";
+import Stats from "stats.js";
 import AppRenderer, { ASPECT_RATIO_RESOLUTIONS } from "@/core/appRenderer";
 import { InputManager } from "@/core/inputManager";
 import { type Scene, SceneManager } from "@/core/scene";
 import Time from "@/core/time";
-import {
-	type AutoDetectOptions,
-	Container,
-	type Renderer,
-	autoDetectRenderer,
-} from "pixi.js";
-import Stats from "stats.js";
 
 interface GameOptions {
 	frame: HTMLElement;
@@ -23,47 +23,47 @@ const DEFAULT_RENDER_OPTIONS: Partial<AutoDetectOptions> = {
 };
 
 export default class Game {
-	private frame: HTMLElement;
-	private renderer: Renderer;
-	private stage: Container;
-	private lastFrame = 0;
-	private _stats?: Stats;
-	private activeScene: Scene | null = null;
-	private pauseWhenHidden = true;
+	#frame: HTMLElement;
+	#renderer: Renderer;
+	#stage: Container;
+	#lastFrame = 0;
+	#stats?: Stats;
+	#activeScene: Scene | null = null;
+	#pauseWhenHidden = true;
 
 	constructor(options: GameOptions, renderer: Renderer) {
-		this.frame = options.frame;
+		this.#frame = options.frame;
 		if ("pauseWhenHidden" in options) {
-			this.pauseWhenHidden = !!options.pauseWhenHidden;
+			this.#pauseWhenHidden = !!options.pauseWhenHidden;
 		}
 
-		this.renderer = renderer;
-		AppRenderer.shared = this.renderer;
+		this.#renderer = renderer;
+		AppRenderer.shared = this.#renderer;
 
-		this.stage = new Container();
+		this.#stage = new Container();
 
 		SceneManager.instance.onActiveSceneChanged.subscribe((scene) => {
-			this.activeScene = scene;
-			this.stage.removeChildren();
+			this.#activeScene = scene;
+			this.#stage.removeChildren();
 			if (scene) {
-				this.stage.addChild(scene.stage);
+				this.#stage.addChild(scene.stage);
 			}
 		});
 
 		document.addEventListener("visibilitychange", () => {
-			if (this.pauseWhenHidden) {
+			if (this.#pauseWhenHidden) {
 				Time.paused = document.hidden;
 				if (!document.hidden) {
 					// reset time
-					this.lastFrame = 0;
+					this.#lastFrame = 0;
 				}
 			}
 		});
 
 		if (import.meta.env.MODE === "development") {
-			this._stats = new Stats();
-			this._stats.showPanel(1);
-			document.body.appendChild(this._stats.dom);
+			this.#stats = new Stats();
+			this.#stats.showPanel(1);
+			document.body.appendChild(this.#stats.dom);
 		}
 
 		if (options.initialScene) {
@@ -71,7 +71,7 @@ export default class Game {
 		}
 
 		requestAnimationFrame(this.tick.bind(this));
-		this.frame.appendChild(this.renderer.canvas);
+		this.#frame.appendChild(this.#renderer.canvas);
 	}
 
 	static async create(options: GameOptions): Promise<Game> {
@@ -82,21 +82,21 @@ export default class Game {
 	}
 
 	private update(): void {
-		if (this.activeScene) {
-			this.activeScene.update();
+		if (this.#activeScene) {
+			this.#activeScene.update();
 		}
 	}
 
 	private tick(time: number): void {
-		if (this._stats) {
-			this._stats.begin();
+		if (this.#stats) {
+			this.#stats.begin();
 		}
-		if (!this.lastFrame) {
-			this.lastFrame = time;
+		if (!this.#lastFrame) {
+			this.#lastFrame = time;
 		}
-		let delta = (time - this.lastFrame) * 0.001;
+		let delta = (time - this.#lastFrame) * 0.001;
 		Time.deltaTime = Time.frameRate;
-		this.lastFrame = time;
+		this.#lastFrame = time;
 
 		if (!Time.paused) {
 			// This produces a fixed-time step
@@ -108,13 +108,13 @@ export default class Game {
 			}
 		}
 
-		this.renderer.render({
+		this.#renderer.render({
 			clear: true,
-			container: this.stage,
+			container: this.#stage,
 		});
 
-		if (this._stats) {
-			this._stats.end();
+		if (this.#stats) {
+			this.#stats.end();
 		}
 
 		// queue next frame

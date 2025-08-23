@@ -1,7 +1,12 @@
 {
 	"name": "pixijs-starter",
 	"description": "Starting template for making WebGL games with Pixi.js",
-	"keywords": ["pixi.js", "webgl", "typescript", "game"],
+	"keywords": [
+		"pixi.js",
+		"webgl",
+		"typescript",
+		"game"
+	],
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
@@ -12,11 +17,11 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "2.2.2",
 		"@types/stats.js": "^0.17.4",
-		"pixi.js": "^8.9.2",
+		"pixi.js": "^8.12.0",
 		"stats.js": "^0.17.0",
-		"typescript": "^5.8.3",
-		"vite": "^6.3.5"
+		"typescript": "^5.9.2",
+		"vite": "^7.1.3"
 	}
 }

@@ -1,9 +1,9 @@
+import { Assets, Graphics, Point, Sprite } from "pixi.js";
 import AppRenderer from "@/core/appRenderer";
 import { CommonKeys, InputManager } from "@/core/inputManager";
 import { PseudoRandom } from "@/core/pseudoRandom";
 import { Scene } from "@/core/scene";
 import Time from "@/core/time";
-import { Assets, Graphics, Point, Sprite } from "pixi.js";
 
 const SQUARE_COLORS = [
 	0xffff00, 0xff0000, 0x00ff00, 0x0000ff, 0x00ffff, 0xff00ff,

@@ -1,6 +1,6 @@
 import "./style.css";
 import Game from "@/core/game";
-import { ExampleScene } from "@/scenes/example.scene";
+import { ExampleSceneLoader } from "@/scenes/example.scene";
 
 document.addEventListener("DOMContentLoaded", () => {
 	const frame = document.getElementById("frame");
@@ -10,6 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	Game.create({
 		frame,
-		initialScene: ExampleScene,
+		initialScene: new ExampleSceneLoader(),
 	}).catch(console.error);
 });

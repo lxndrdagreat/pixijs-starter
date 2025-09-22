@@ -7,13 +7,13 @@ import {
 import Stats from "stats.js";
 import AppRenderer, { ASPECT_RATIO_RESOLUTIONS } from "@/core/appRenderer";
 import { InputManager } from "@/core/inputManager";
-import { type Scene, SceneManager } from "@/core/scene";
+import { type ISceneLoader, type Scene, SceneManager } from "@/core/scene";
 import Time from "@/core/time";
 
-interface GameOptions {
+interface GameOptions<T extends Scene = Scene> {
 	frame: HTMLElement;
 	renderOptions?: Partial<AutoDetectOptions>;
-	initialScene?: typeof Scene;
+	initialScene?: ISceneLoader<T>;
 	pauseWhenHidden?: boolean;
 }
 

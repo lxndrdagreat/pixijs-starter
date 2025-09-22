@@ -2,14 +2,27 @@ import { Assets, Graphics, Point, Sprite } from "pixi.js";
 import AppRenderer from "@/core/appRenderer";
 import { CommonKeys, InputManager } from "@/core/inputManager";
 import { PseudoRandom } from "@/core/pseudoRandom";
-import { Scene } from "@/core/scene";
+import { type ISceneLoader, Scene } from "@/core/scene";
 import Time from "@/core/time";
 
 const SQUARE_COLORS = [
 	0xffff00, 0xff0000, 0x00ff00, 0x0000ff, 0x00ffff, 0xff00ff,
 ];
 
-export class ExampleScene extends Scene {
+export class ExampleSceneLoader implements ISceneLoader<ExampleScene> {
+	async load(): Promise<ExampleScene> {
+		// Load the logo as a texture so we can use it in a sprite
+		Assets.add({
+			alias: "logo",
+			src: "/vite.svg",
+		});
+		await Assets.load("logo");
+
+		return new ExampleScene();
+	}
+}
+
+class ExampleScene extends Scene {
 	#square: Graphics;
 	#squareColorIndex = 0;
 	#logo: Sprite;
@@ -47,16 +60,6 @@ export class ExampleScene extends Scene {
 		this.#logo = new Sprite(texture);
 		this.#logo.anchor.set(0.5, 0.5);
 		this.stage.addChild(this.#logo);
-	}
-
-	static override async load(): Promise<ExampleScene> {
-		// Load the logo as a texture so we can use it in a sprite
-		Assets.add({
-			alias: "logo",
-			src: "/vite.svg",
-		});
-		await Assets.load("logo");
-		return new ExampleScene();
 	}
 
 	#buildSquare(): void {

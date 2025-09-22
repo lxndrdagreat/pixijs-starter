@@ -1,6 +1,15 @@
 import { Container } from "pixi.js";
 import { Subscribable } from "@/core/subscribable";
 
+export interface ISceneLoader<SceneClass extends Scene> {
+	/**
+	 * Override this function. This is where you load and assets
+	 * needed by the scene, then return a new instance of the scene
+	 * class itself.
+	 */
+	load(): Promise<SceneClass>;
+}
+
 export class Scene {
 	stage: Container = new Container();
 
@@ -11,13 +20,9 @@ export class Scene {
 	update(): void {}
 
 	/**
-	 * Override this function. This is where you load and assets
-	 * needed by the scene, then return a new instance of the scene
-	 * class itself.
+	 * Called when the scene is no longer active.
 	 */
-	static async load(): Promise<Scene> {
-		return new Scene();
-	}
+	unload(): void {}
 }
 
 export class SceneManager {
@@ -45,13 +50,16 @@ export class SceneManager {
 		return this._sceneStack[0];
 	}
 
-	async replace(sceneClass: typeof Scene): Promise<Scene> {
+	async replace<T extends Scene>(loader: ISceneLoader<T>): Promise<Scene> {
+		for (const scene of this._sceneStack) {
+			scene.unload();
+		}
 		this._sceneStack = [];
-		return this.push(sceneClass);
+		return this.push(loader);
 	}
 
-	async push(sceneClass: typeof Scene): Promise<Scene> {
-		const loadPromise = sceneClass.load();
+	async push<T extends Scene>(loader: ISceneLoader<T>): Promise<Scene> {
+		const loadPromise: Promise<Scene> = loader.load();
 		this.onSceneLoading.publish(loadPromise);
 		const scene = await loadPromise;
 		this.onSceneLoaded.publish(scene);
@@ -64,7 +72,10 @@ export class SceneManager {
 		if (!this._sceneStack.length) {
 			return;
 		}
-		this._sceneStack.shift();
+		const scene = this._sceneStack.shift();
+		if (scene) {
+			scene.unload();
+		}
 		if (!this._sceneStack.length) {
 			this.onActiveSceneChanged.publish(null);
 		} else {
